@@ -1,0 +1,99 @@
+<div class="mat-elevation-z8">
+    <table class="table-bordered table" mat-table [dataSource]="dataSource">
+  
+      <!-- Start Button Column -->
+      <ng-container class="set-gap" matColumnDef="start-button">
+        <th mat-header-cell *matHeaderCellDef> </th>
+        <td mat-cell *matCellDef="let element">
+          <button class="start-button" [disabled]="element.editable" mat-raised-button (click)="openDialog(element)">Start</button>
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let element"> 
+          <mat-label *ngIf="!element.editable">{{element.status}} </mat-label>
+          <mat-form-field  *ngIf="element.editable">
+            <mat-select (selectionChange)="onStatusChange(element)" [(value)]="element.status">
+              <mat-option value="Completed">Completed</mat-option>
+              <mat-option value="OnHold">On Hold</mat-option>
+              <mat-option value="WIP">WIP</mat-option>
+            </mat-select>
+        </mat-form-field>
+        </td>
+      </ng-container>
+
+      <!-- Process Key Number Column -->
+      <ng-container matColumnDef="processKeyNumber">
+        <th mat-header-cell *matHeaderCellDef> Process Key Number </th>
+        <td mat-cell *matCellDef="let element">
+           <mat-label *ngIf="!element.editable">{{element.processKeyNumber}} </mat-label>
+           <mat-form-field *ngIf="element.editable">
+            <input matInput [(ngModel)]="element.processKeyNumber">
+          </mat-form-field>
+          </td>
+      </ng-container>
+
+      <!-- Alpha Numeric 10 Column -->
+      <ng-container matColumnDef="alphaNumeric10">
+        <th mat-header-cell *matHeaderCellDef> Alpha Numeric 10 </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-label *ngIf="!element.editable">{{element.alphaNumeric10}} </mat-label>
+           <mat-form-field *ngIf="element.editable">
+            <input matInput [(ngModel)]="element.alphaNumeric10">
+          </mat-form-field>
+        </td>
+      </ng-container>
+  
+      <!-- Alpha Numeric 33 Column -->
+      <ng-container matColumnDef="alphaNumeric33">
+        <th mat-header-cell *matHeaderCellDef> Alpha Numeric 33 </th>
+        <td mat-cell *matCellDef="let element">
+           <mat-label *ngIf="!element.editable">{{element.alphaNumeric33}} </mat-label>
+           <mat-form-field *ngIf="element.editable">
+            <input matInput [(ngModel)]="element.alphaNumeric33">
+          </mat-form-field>
+          </td>
+      </ng-container>
+  
+      <!-- Alpha Numeric 57 Column -->
+      <ng-container matColumnDef="alphaNumeric57">
+        <th mat-header-cell *matHeaderCellDef> Alpha Numeric 57 </th>
+        <td mat-cell *matCellDef="let element"> 
+          <mat-label *ngIf="!element.editable">{{element.alphaNumeric57}} </mat-label>
+           <mat-form-field *ngIf="element.editable">
+            <input matInput [(ngModel)]="element.alphaNumeric57">
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <!-- Volume Count Column -->
+      <ng-container matColumnDef="volumeCount">
+        <th mat-header-cell *matHeaderCellDef> Volume Count </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-label *ngIf="!element.editable">{{element.volumeCount}} </mat-label>
+           <mat-form-field *ngIf="element.editable">
+            <input matInput [(ngModel)]="element.volumeCount">
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <!-- Comments Column -->
+      <ng-container matColumnDef="comments">
+        <th mat-header-cell *matHeaderCellDef> Comments </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-label *ngIf="!element.editable">{{element.comments}} </mat-label>
+           <mat-form-field *ngIf="element.editable">
+            <input matInput [(ngModel)]="element.comments">
+          </mat-form-field>
+        </td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  </div>
+  
