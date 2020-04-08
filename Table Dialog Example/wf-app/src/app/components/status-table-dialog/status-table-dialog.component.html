@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>Hi {{data.name}}</h1>
+<div mat-dialog-content>
+    <mat-form-field>
+        <mat-label>Status</mat-label>
+        <mat-select [(value)]="data.status">
+          <mat-option value="Completed">Completed</mat-option>
+          <mat-option value="OnHold">On Hold</mat-option>
+          <mat-option value="WIP">WIP</mat-option>
+        </mat-select>
+    </mat-form-field>
+  <mat-form-field>
+    <mat-label>Process Key Number</mat-label>
+    <input matInput [(ngModel)]="data.processKeyNumber" id= "data.processKeyNumber" name = "data.processKeyNumber">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>AlphaNumeric10</mat-label>
+    <input matInput [(ngModel)]="data.alphaNumeric10" id= "data.alphaNumeric10" name = "data.alphaNumeric10">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>AlphaNumeric33</mat-label>
+    <input matInput [(ngModel)]="data.alphaNumeric33" id= "data.alphaNumeric33" name = "data.alphaNumeric33">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>AlphaNumeric57</mat-label>
+    <input matInput [(ngModel)]="data.alphaNumeric57" id= "data.alphaNumeric57" name = "data.alphaNumeric57">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Volume Count</mat-label>
+    <input matInput [(ngModel)]="data.volumeCount" id= "data.volumeCount" name = "data.volumeCount">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Comments</mat-label>
+    <input matInput [(ngModel)]="data.comments" id= "data.comments" name = "data.comments">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
+</div>
