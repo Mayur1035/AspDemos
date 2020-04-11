@@ -10,5 +10,5 @@ export class ProcessElement {
     position: number;
     weight: number;
     symbol: string;
-    editable : boolean = false;
+    editables : boolean = false;
   }

@@ -12,5 +12,12 @@ table {
     margin-right: 5%;
   }
 
+  .super-work-div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+
 
   

@@ -1,8 +1,8 @@
-import {Component, OnInit, ViewChild, Inject} from '@angular/core';
+import {Component, OnInit, ViewChild, Inject, ChangeDetectorRef} from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
-import {MatTableDataSource} from '@angular/material/table';
-import { StatusTableDialogComponent } from '../status-table-dialog/status-table-dialog.component';
-import { ProcessElement } from 'src/app/models/process-element';
+import { WorkSummaryService } from 'src/app/service/work-summary.service';
+import { WorkItemRequest } from 'src/app/models/work-item-request';
+import { StatusTableHelperService } from 'src/app/service/status-table-helper.service';
 
 @Component({
   selector: 'app-status-table',
@@ -12,42 +12,113 @@ import { ProcessElement } from 'src/app/models/process-element';
 export class StatusTableComponent implements OnInit {
 
   selected = 'option2';
+  priorityVal:string="----";
   editable:boolean=false;
-  displayedColumns: string[] = ['start-button','status','processKeyNumber', 'alphaNumeric10', 'alphaNumeric33', 'alphaNumeric57', 'volumeCount', 'comments'];
-  dataSource = new MatTableDataSource<ProcessElement>(ELEMENT_DATA);
+ 
+  displayedColumns: string[] ;
+
+  data: any[];
+
+  workItemRequest = new WorkItemRequest();
+
+  /** ProcessControl Dropdown */
+  process : Array<string> = [];
+
+  /** Status Dropdown */
+  allStatus: any[];
 
 
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
 
 
-  constructor() {}
+  constructor(private changeDetectorRefs: ChangeDetectorRef, 
+    private workSummarySvc : WorkSummaryService, 
+    private statusHelperSvc : StatusTableHelperService) {}
+
   ngOnInit() {
-    this.dataSource.paginator = this.paginator;
   }
 
-  openDialog(element : ProcessElement): void {
-    console.log(element.status);
+  openDialog(element : any): void {
     element.editable= true;
   }
 
-  onStatusChange(element : ProcessElement): void {
-    console.log('Status changed...');
-    console.log(element.status);
+  onStatusChange(element : any): void {
+    console.log('Status changed...', element.Status);
     element.editable= false;
+    let statusId = this.statusHelperSvc.getStatusId(element.Status , this.allStatus);
+    console.log('onStatusChange statusId ',statusId);
   }
+
+  createNewElement(): void{
+    console.log('Creating new work item...')
+    this.workItemRequest = new WorkItemRequest();
+    this.workItemRequest.processid= 'd59f298b-2459-ea11-8193-f40343abc830';
+    this.workItemRequest.activityId='8e87c1ff-c662-ea11-8194-f40343abc830';
+
+    if( this.workItemRequest.processid && this.workItemRequest.activityId){
+      this.workSummarySvc.createBlankWorkItem(this.workItemRequest).subscribe(
+        blankResult =>{
+          console.log("createBlankWorkItem result ", blankResult);
+          this.generateGrid(this.workItemRequest);
+        },
+        err => {
+          console.log("Issue Occurred while createBlankWorkItem ", err);
+          this.priorityVal="Issue Occurred in createBlankWorkItem!"
+        }
+      );
+    }
+   /* 
+    const newElement : ProcessElement=
+    {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H', status:'Completed', processKeyNumber:10,alphaNumeric10:'test',alphaNumeric33:'test',alphaNumeric57:'test', volumeCount: 2, comments:'test check', editable:false };
+    this.data.push(newElement);
+    console.log(this.data.length)
+    this.changeDetectorRefs.detectChanges();*/
+  }
+
+  onActivityChange():void{
+    console.log('onActivityChange...')
+    this.workItemRequest = new WorkItemRequest();
+    this.workItemRequest.processid= 'd59f298b-2459-ea11-8193-f40343abc830';
+    this.workItemRequest.activityId='8e87c1ff-c662-ea11-8194-f40343abc830';
+
+    if( this.workItemRequest.processid && this.workItemRequest.activityId){
+      this.generateGrid(this.workItemRequest);
+    }
+  }
+
+  generateGrid(request: WorkItemRequest) {
+    this.workSummarySvc.getAssignedTimeTrackerWorkItems(request).subscribe(
+      result => {
+        console.log("generateGrid result ",result);
+        this.priorityVal="call successful !"
+
+        console.log("result[0][0] ",result[0][0]);
+        console.log("result[0] ",result[0]);
+        console.log("result[1][1] ",result[1][1]);
+        console.log("result[1] ",result[1]);
+        console.log("result[2][2] ",result[2][2]);
+        console.log("result[2] ",result[2]);
+
+        //this.displayedColumns = this.statusHelperSvc.populateDisplayedColumns(result[0][0]);
+        this.displayedColumns = this.statusHelperSvc.populateDisplayedColumns(result[0]);
+        console.log("Displayed Columns: " , this.displayedColumns);
+
+        //this.data = this.statusHelperSvc.populateData(result[1][1]);
+        this.data = this.statusHelperSvc.populateData(result[1]);
+        console.log("data : " ,this.data);
+
+        //this.allStatus = this.statusHelperSvc.populateAllStatus(result[2][2]);
+        this.allStatus = this.statusHelperSvc.populateAllStatus(result[2]);
+        console.log("allStatus : " , this.allStatus);
+
+      },
+      err => {
+        console.log("Issue Occurred while getAssignedTimeTrackerWorkItems ", err);
+        this.priorityVal="Issue Occurred !"
+      }
+    );
+  }
+
+
 }
 
-
-
-const ELEMENT_DATA: ProcessElement[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H', status:'Completed', processKeyNumber:10,alphaNumeric10:'test',alphaNumeric33:'test',alphaNumeric57:'test', volumeCount: 2, comments:'test check', editable:false },
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He', status:'Completed', processKeyNumber:10,alphaNumeric10:'test',alphaNumeric33:'test',alphaNumeric57:'test', volumeCount: 2, comments:'test check',editable:false },
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li', status:'Completed', processKeyNumber:10,alphaNumeric10:'test',alphaNumeric33:'test',alphaNumeric57:'test', volumeCount: 2, comments:'test check',editable:false },
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be', status:'WIP', processKeyNumber:10,alphaNumeric10:'test',alphaNumeric33:'test',alphaNumeric57:'test', volumeCount: 2, comments:'test check',editable:false },
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B', status:'Completed', processKeyNumber:10,alphaNumeric10:'test',alphaNumeric33:'test',alphaNumeric57:'test', volumeCount: 2, comments:'test check',editable:false },
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C', status:'Completed', processKeyNumber:10,alphaNumeric10:'test',alphaNumeric33:'test',alphaNumeric57:'test', volumeCount: 2, comments:'test check',editable:false },
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N', status:'Completed', processKeyNumber:10,alphaNumeric10:'test',alphaNumeric33:'test',alphaNumeric57:'test', volumeCount: 2, comments:'test check',editable:false },
-  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O', status:'Completed', processKeyNumber:10,alphaNumeric10:'test',alphaNumeric33:'test',alphaNumeric57:'test', volumeCount: 2, comments:'test check',editable:false },
-  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F', status:'Completed', processKeyNumber:10,alphaNumeric10:'test',alphaNumeric33:'test',alphaNumeric57:'test', volumeCount: 2, comments:'test check',editable:false },
-  
-];

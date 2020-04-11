@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableModule} from '@angular/material/table';
@@ -15,6 +16,8 @@ import { AppComponent } from './app.component';
 import { StatusTableComponent } from './components/status-table/status-table.component';
 import { HeaderComponent } from './components/header/header.component';
 import { StatusTableDialogComponent } from './components/status-table-dialog/status-table-dialog.component';
+import { WorkSummaryService } from './service/work-summary.service';
+import { StatusTableHelperService } from './service/status-table-helper.service';
 
 @NgModule({
   declarations: [
@@ -28,6 +31,7 @@ import { StatusTableDialogComponent } from './components/status-table-dialog/sta
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
+    HttpClientModule,
     MatPaginatorModule,
     MatTableModule,
     MatSelectModule,
@@ -35,7 +39,7 @@ import { StatusTableDialogComponent } from './components/status-table-dialog/sta
     MatInputModule,
     MatDividerModule
   ],
-  providers: [],
+  providers: [WorkSummaryService, StatusTableHelperService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
