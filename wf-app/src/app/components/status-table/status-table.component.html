@@ -5,18 +5,18 @@
     <div class="process-control-div">
           <mat-form-field>
             <mat-label>Process </mat-label>
-            <mat-select>
-              <mat-option>-- None --</mat-option>
-              <mat-option value="option">Option</mat-option>
+            <mat-select (selectionChange)="onProcessChange()" [(value)]="processIdVal">
+              <mat-option *ngFor="let processObj of processList" [value]="processObj.Value">{{processObj.Text}}</mat-option>
             </mat-select>
           </mat-form-field>
     </div>
     <div class="activity-control-div">
           <mat-form-field>
             <mat-label>Activity </mat-label>
-            <mat-select (selectionChange)="onActivityChange()">
+            <mat-select (selectionChange)="onActivityChange()" [(value)]="activityIdVal">
               <mat-option>-- None --</mat-option>
               <mat-option value="option">Option</mat-option>
+              <mat-option *ngFor="let activityObj of activityList" [value]="activityObj.Value">{{activityObj.Text}}</mat-option>
             </mat-select>
           </mat-form-field>
     </div>
@@ -24,7 +24,7 @@
       <mat-label>Priority : </mat-label>
       <mat-label>{{priorityVal}} </mat-label>
     </div>
-    <button class="create-work-button" mat-raised-button (click)="createNewElement()">Create New Work Item</button>
+    <button type="button" class="create-work-button" (click)="createNewElement()">Create New Work Item</button>
     <a href="#">Record Activities</a>
     <a href="#">Time Sheet</a>
 </div>

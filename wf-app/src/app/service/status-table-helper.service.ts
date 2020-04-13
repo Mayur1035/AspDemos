@@ -1,37 +1,52 @@
 import { Injectable } from '@angular/core';
+import { WorkSummaryService } from './work-summary.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StatusTableHelperService {
   
-  constructor() { }
+  
+  constructor(private workSummarySvc : WorkSummaryService) { }
 
-  populateDisplayedColumns(columnArray: any []): string[] {
+  populateDisplayedColumns(result: any): string[] {
+
     let displayColumns: string[] = ['start-button'];
-    console.log("columnArray ",columnArray);
-    for(let i =0 ; i < columnArray.length;i++){
-      displayColumns.push(columnArray[i].mapColumnName);
+    let columnArray = result.d[0];
+    //let columnArray = result[0];
+    if(columnArray){
+      console.log("columnArray ",columnArray);
+      for(let i =0 ; i < columnArray.length;i++){
+        displayColumns.push(columnArray[i].mapColumnName);
+      }
     }
     return displayColumns;
   }
 
-  populateData(dataArray: any[]): any[] {
+  populateData(result : any): any[] {
     let data = new Array<any>();
-    let tempVal : boolean = false;
-    console.log("dataArray ",dataArray);
-    for(let i =0 ; i < dataArray.length;i++){
-      dataArray[i].editable= tempVal;
-      data.push(dataArray[i]);
+    let dataArray= JSON.parse(result.d[1]);
+    //let dataArray= result[1];
+    if(dataArray){
+      console.log("dataArray ",dataArray);
+      let tempVal : boolean = false;
+      for(let i =0 ; i < dataArray.length;i++){
+        dataArray[i].editable= tempVal;
+        data.push(dataArray[i]);
+      }
     }
     return data;
   }
 
-  populateAllStatus(statusArray: any): any[] {
-    console.log("statusArray ",statusArray);
+  populateAllStatus(result: any): any[] {
     let allStatus= new Array<any>();
-    for(let i =0 ; i < statusArray.length;i++){
-      allStatus.push(statusArray[i]);
+    let statusArray= result.d[2];
+    //let statusArray= result[2];
+    if(statusArray){
+      console.log("statusArray ",statusArray);
+      for(let i =0 ; i < statusArray.length;i++){
+        allStatus.push(statusArray[i]);
+      }
     }
     return allStatus;
   }
@@ -45,6 +60,24 @@ export class StatusTableHelperService {
       }
     }
     return statusId;
+  }
+
+
+  populateProcessList(result: any): any[] {
+    let resultArray= result.d[0];
+    let processList= new Array<any>();
+    for(let i =0 ; i < resultArray.length;i++){
+        processList.push(result[i]);
+    }
+    return processList;
+  }
+
+  populateActivityList(result: any): any[] {
+    let listItems= new Array<any>();
+    for(let i =0 ; i < result.length;i++){
+      listItems.push(result[i]);
+    }
+    return listItems;
   }
 
 }

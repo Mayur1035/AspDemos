@@ -10,7 +10,8 @@ export class WorkSummaryService {
   private workItemUrl: string;
 
   constructor(private http: HttpClient) { 
-    this.workItemUrl='CreateWorkItemJS.aspx/';
+    this.workItemUrl='CreateWorkItemManually.aspx/';
+    //this.workItemUrl='Default.aspx/';
     //this.workItemUrl='http://localhost:3000/';
   }
 
@@ -31,6 +32,16 @@ export class WorkSummaryService {
 
   updateWorkItemStatus(request : WorkItemRequest){
     return this.http.post(`${this.workItemUrl}GetStatusDetails`, request );
+    //return this.http.get(`${this.workItemUrl}d`);
+  }
+
+  getActivityList(processIdVal : string){
+    return this.http.post(`${this.workItemUrl}GetActivityList`, processIdVal );
+    //return this.http.get(`${this.workItemUrl}d`);
+  }
+
+  getProcessList(){
+    return this.http.post(`${this.workItemUrl}GetProcessList1` , "");
     //return this.http.get(`${this.workItemUrl}d`);
   }
 
