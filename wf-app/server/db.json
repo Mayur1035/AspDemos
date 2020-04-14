@@ -3,29 +3,40 @@
     {
       "0": [
         {
+          "id": 9,
+          "name": "Action",
+          "text": "Services"
+        },
+		{
           "id": 1,
-          "mapColumnName": "Status",
+          "name": "Status",
+		   "hidden": false,
           "text": "Services"
         },
         {
           "id": 2,
-          "mapColumnName": "ProcessKeyNumber",
+          "name": "ProcessKeyNumber",
+		   "hidden": false,
           "text": "Http Client"
         },
         {
-          "mapColumnName": "Comments",
+          "name": "Comments",
           "text": "Lets Test",
+		   "hidden": true,
           "id": 3
         },
         {
-          "mapColumnName": "AlphaNumeric10",
+          "name": "AlphaNumeric10",
           "text": "Testing task",
+		  "hidden": true,
           "id": 4
         },
 		{
-          "mapColumnName": "AlphaNumeric57",
+          "name": "AlphaNumeric57",
           "text": "Testing task",
+		  "hidden": true,
           "id": 5
+		  
         }
       ]
     },
@@ -33,7 +44,7 @@
       "1": [
         {
           "WorkItemID": 1,
-          "Status": "On Hold",
+          "Status": "2",
 		  "Comments": "Third Task",
 		  "ProcessKeyNumber": "Secong Task",
 		  "AlphaNumeric10": "Test Task",
@@ -41,7 +52,7 @@
         },
         {
           "WorkItemID": 2,
-		  "Status": "WIP",
+		  "Status": "3",
           "ProcessKeyNumber": "Secong Task",
 		  "Comments": "Third Task",
 		  "AlphaNumeric10": "Test Task",

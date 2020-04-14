@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { WorkItemRequest } from '../models/work-item-request';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -35,14 +36,21 @@ export class WorkSummaryService {
     //return this.http.get(`${this.workItemUrl}d`);
   }
 
-  getActivityList(processIdVal : string){
-    return this.http.post(`${this.workItemUrl}GetActivityList`, processIdVal );
+  getActivityList(processIdVal : string): Observable<any>{
+    let headers = new HttpHeaders();
+    headers.append('Content-Type', 'application/json');
+    let content = {ProcessID: processIdVal};
+    return this.http.post<any>(`${this.workItemUrl}GetActivityList`, content, {
+      headers: headers} );
     //return this.http.get(`${this.workItemUrl}d`);
   }
 
-  getProcessList(){
-    return this.http.post(`${this.workItemUrl}GetProcessList1` , "");
-    //return this.http.get(`${this.workItemUrl}d`);
+  getProcessList(): Observable<any>{
+    let headers = new HttpHeaders();
+    headers.append('Content-Type', 'application/json');
+    let content = {};
+    return this.http.post<any>(`${this.workItemUrl}GetProcessList` , content, {
+      headers: headers});
   }
 
 }

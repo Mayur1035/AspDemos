@@ -13,10 +13,11 @@ export class StatusTableComponent implements OnInit {
 
   selected = 'option2';
   priorityVal:string="----";
-  editable:boolean=false;
- 
+
+  /** Display Columns List */
   displayedColumns: string[] ;
 
+  /** Grid Data */
   data: any[];
 
   workItemRequest = new WorkItemRequest();
@@ -59,16 +60,16 @@ export class StatusTableComponent implements OnInit {
 
   openDialog(element : any): void {
     console.log("openDialog for Editing ",element);
-    element.editable= true;
+    element.canEdit= true;
     
     if(element.Status == "Select"  || element.Status != ""){
     this.workItemRequest = new WorkItemRequest();
-    this.workItemRequest.processid= 'd59f298b-2459-ea11-8193-f40343abc830';
+    this.workItemRequest.processid= this.processIdVal;
     this.workItemRequest.workitemId=element.WorkItemID;
       if(element.Status == "Select"){
-        this.workItemRequest.isForHold = false;
+        this.workItemRequest.isforhold = false;
       }else{
-        this.workItemRequest.isForHold = true;
+        this.workItemRequest.isforhold = true;
       }
       this.workSummarySvc.startWorkItem(this.workItemRequest).subscribe(
         (result: any) => {
@@ -84,7 +85,7 @@ export class StatusTableComponent implements OnInit {
 
   onStatusChange(element : any): void {
     console.log('Status changed...', element.Status);
-    element.editable= false;
+    element.canEdit= false;
     let statusId = this.statusHelperSvc.getStatusId(element.Status , this.allStatus);
     console.log('onStatusChange statusId ',statusId);
 
@@ -103,9 +104,13 @@ export class StatusTableComponent implements OnInit {
 
   createNewElement(): void{
     console.log('Creating new work item...')
+
+    //this.processIdVal = "test";
+    //this.activityIdVal= "test";
+
     this.workItemRequest = new WorkItemRequest();
-    this.workItemRequest.processid= 'd59f298b-2459-ea11-8193-f40343abc830';
-    this.workItemRequest.activityId='8e87c1ff-c662-ea11-8194-f40343abc830';
+    this.workItemRequest.processid= this.processIdVal;
+    this.workItemRequest.activityId= this.activityIdVal;
 
     if( this.workItemRequest.processid && this.workItemRequest.activityId){
       this.workSummarySvc.createBlankWorkItem(this.workItemRequest).subscribe(
@@ -128,8 +133,8 @@ export class StatusTableComponent implements OnInit {
   }
 
   onProcessChange():void{
-    console.log('onProcessChange...', this.processIdVal);
-
+    console.log('onProcessChange... processIdVal', this.processIdVal);
+    
     if( this.processIdVal){
       this.workSummarySvc.getActivityList(this.processIdVal).subscribe(
         (result: any) => {
@@ -145,10 +150,15 @@ export class StatusTableComponent implements OnInit {
   }
 
   onActivityChange():void{
-    console.log('onActivityChange...', this.activityIdVal);
+    console.log('onActivityChange... activityIdVal', this.activityIdVal);
+    console.log('onActivityChange... processIdVal', this.processIdVal);
+
+    //this.processIdVal = "test";
+    //this.activityIdVal= "test";
+
     this.workItemRequest = new WorkItemRequest();
-    this.workItemRequest.processid= 'd59f298b-2459-ea11-8193-f40343abc830';
-    this.workItemRequest.activityId='8e87c1ff-c662-ea11-8194-f40343abc830';
+    this.workItemRequest.processid= this.processIdVal;
+    this.workItemRequest.activityId= this.activityIdVal;
 
     if( this.workItemRequest.processid && this.workItemRequest.activityId){
       this.generateGrid(this.workItemRequest);
@@ -161,24 +171,18 @@ export class StatusTableComponent implements OnInit {
         console.log("generateGrid result ",result);
         this.priorityVal="call successful !"
 
-       /* console.log("result[0][0] ",result[0][0]);
-        console.log("result[0] ",result[0]);
-        console.log("result[1][1] ",result[1][1]);
-        console.log("result[1] ",result[1]);
-        console.log("result[2][2] ",result[2][2]);
-        console.log("result[2] ",result[2]);*/
-
         //this.displayedColumns = this.statusHelperSvc.populateDisplayedColumns(result[0]);
         this.displayedColumns = this.statusHelperSvc.populateDisplayedColumns(result);
         console.log("Displayed Columns: " , this.displayedColumns);
 
-        //this.data = this.statusHelperSvc.populateData(result[1]);
-        this.data = this.statusHelperSvc.populateData(result);
-        console.log("data : " ,this.data);
-
+        
         //this.allStatus = this.statusHelperSvc.populateAllStatus(result[2]);
         this.allStatus = this.statusHelperSvc.populateAllStatus(result);
         console.log("allStatus : " , this.allStatus);
+
+        //this.data = this.statusHelperSvc.populateData(result[1], this.allStatus);
+        this.data = this.statusHelperSvc.populateData(result, this.allStatus);
+        console.log("data : " ,this.data);
 
       },
       err => {
