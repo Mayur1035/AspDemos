@@ -5,15 +5,14 @@ import { WorkSummaryService } from './work-summary.service';
   providedIn: 'root'
 })
 export class StatusTableHelperService {
-  
-  
+    
   constructor(private workSummarySvc : WorkSummaryService) { }
 
-  populateDisplayedColumns(result: any): string[] {
+  populateDisplayedColumns(columnArray: any): string[] {
 
     //let displayColumns: string[] = ['start-button'];
     let displayColumns = new Array<any>();
-    let columnArray = result.d[0];
+   // let columnArray = result.d[0];
     //let columnArray = result[0];
     if(columnArray){
       console.log("columnArray ",columnArray);
@@ -34,6 +33,11 @@ export class StatusTableHelperService {
       console.log("dataArray ",dataArray);
       let tempVal : boolean = false;
       for(let i =0 ; i < dataArray.length;i++){
+        if(dataArray[i].IsTimerRunning == "1"){
+          tempVal = true;
+        }else{
+          tempVal = false;
+        }
         dataArray[i].canEdit= tempVal;
         let statusId = dataArray[i].Status;
         dataArray[i].Status = this.getStatusName(allStatus, statusId);
@@ -97,6 +101,27 @@ export class StatusTableHelperService {
       listItems.push(resultArray[i]);
     }
     return listItems;
+  }
+
+  getValidateAllDataVal(result: any): boolean {
+    let validateAllData : boolean = false;
+    if(result.MoveToNextActorQueue ||
+      result.IsMoveToNextActorQueueNoSampleQC ||
+      result.IsFinalStatus){
+        validateAllData = true;
+      }
+    return validateAllData;
+  }
+
+  getValidationMsg(result: any, element: any, columnArray: any[]): string {
+    let validationMsg : string = null;
+    let validateAllData : boolean = this.getValidateAllDataVal(result);
+    if(validateAllData){
+      // element has all valid data with valid data types in all displayed columns
+    }else{
+      // element has all valid data with valid data types
+    }
+    return validationMsg;
   }
 
 }

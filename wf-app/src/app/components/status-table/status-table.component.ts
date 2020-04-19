@@ -1,8 +1,9 @@
-import {Component, OnInit, ViewChild, Inject, ChangeDetectorRef} from '@angular/core';
-import {MatPaginator} from '@angular/material/paginator';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import { WorkSummaryService } from 'src/app/service/work-summary.service';
 import { WorkItemRequest } from 'src/app/models/work-item-request';
 import { StatusTableHelperService } from 'src/app/service/status-table-helper.service';
+
+import * as $ from 'jquery' 
 
 @Component({
   selector: 'app-status-table',
@@ -11,11 +12,13 @@ import { StatusTableHelperService } from 'src/app/service/status-table-helper.se
 })
 export class StatusTableComponent implements OnInit {
 
-  selected = 'option2';
+ // $: any;
+
   priorityVal:string="----";
 
   /** Display Columns List */
   displayedColumns: string[] ;
+  columnArray: any[];
 
   /** Grid Data */
   data: any[];
@@ -33,17 +36,13 @@ export class StatusTableComponent implements OnInit {
   /** Status Dropdown */
   allStatus: any[];
 
-
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-
-
-  constructor(private changeDetectorRefs: ChangeDetectorRef, 
-    private workSummarySvc : WorkSummaryService, 
+  constructor(private workSummarySvc : WorkSummaryService, 
     private statusHelperSvc : StatusTableHelperService) {}
 
   ngOnInit() {
     this.populateProcessList();
   }
+  
 
   populateProcessList() {
     this.workSummarySvc.getProcessList().subscribe(
@@ -93,13 +92,35 @@ export class StatusTableComponent implements OnInit {
     this.workItemRequest.statusId = statusId;
     this.workSummarySvc.updateWorkItemStatus(this.workItemRequest).subscribe(
       (result: any) => {
-        console.log("updateWorkItemStatus result ",result);
+        console.log("updateWorkItemStatus GetStatusDetails result ",result);
+        let validationMsg = this.statusHelperSvc.getValidationMsg(result, element, this.columnArray);
+        if(validationMsg){
+          let xmlString = '';
+          this.workItemRequest.workitemId = element.WorkItemID;
+          this.workItemRequest.xmlString = xmlString;
+          this.saveWorkItems(this.workItemRequest);
+        }else{
+          console.log("validation failed for validationMsg ", validationMsg);
+        }
       },
       err => {
-        console.log("Issue Occurred while updateWorkItemStatus ", err);
+        console.log("Issue Occurred while updateWorkItemStatus GetStatusDetails ", err);
       }
     );
+  }
 
+
+  saveWorkItems(workItemRequest: WorkItemRequest): void {
+    console.log("saveWorkItems workItemRequest ", workItemRequest);
+    this.workSummarySvc.saveWorkItems(this.workItemRequest).subscribe(
+      (result: any) =>{
+        console.log("saveWorkItems result ", result);
+        this.generateGrid(this.workItemRequest);
+      },
+      err => {
+        console.log("Issue Occurred while saveWorkItems ", err);
+      }
+    );
   }
 
   createNewElement(): void{
@@ -123,13 +144,9 @@ export class StatusTableComponent implements OnInit {
           this.priorityVal="Issue Occurred in createBlankWorkItem!"
         }
       );
+    }else{
+      console.log("processid  OR  activityId value is not present !");
     }
-   /* 
-    const newElement : ProcessElement=
-    {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H', status:'Completed', processKeyNumber:10,alphaNumeric10:'test',alphaNumeric33:'test',alphaNumeric57:'test', volumeCount: 2, comments:'test check', editable:false };
-    this.data.push(newElement);
-    console.log(this.data.length)
-    this.changeDetectorRefs.detectChanges();*/
   }
 
   onProcessChange():void{
@@ -162,6 +179,8 @@ export class StatusTableComponent implements OnInit {
 
     if( this.workItemRequest.processid && this.workItemRequest.activityId){
       this.generateGrid(this.workItemRequest);
+    }else{
+      console.log("processid  OR  activityId value is not present !");
     }
   }
 
@@ -171,8 +190,9 @@ export class StatusTableComponent implements OnInit {
         console.log("generateGrid result ",result);
         this.priorityVal="call successful !"
 
-        //this.displayedColumns = this.statusHelperSvc.populateDisplayedColumns(result[0]);
-        this.displayedColumns = this.statusHelperSvc.populateDisplayedColumns(result);
+        this.columnArray = result.d[0];
+        //this.columnArray = result[0][0];
+        this.displayedColumns = this.statusHelperSvc.populateDisplayedColumns(this.columnArray);
         console.log("Displayed Columns: " , this.displayedColumns);
 
         
@@ -190,6 +210,16 @@ export class StatusTableComponent implements OnInit {
         this.priorityVal="Issue Occurred !"
       }
     );
+  }
+
+
+
+  /** Placeholder to add Record Activities Related scripts */
+  openPopUp(): void {
+    console.log("Control inside Record Activities OpenPopUp.....");
+    
+   $('#ngRecordActivity').click(function(){ alert('Wass up!'); });
+
   }
 
 

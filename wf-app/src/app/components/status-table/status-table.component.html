@@ -25,8 +25,8 @@
       <mat-label>{{priorityVal}} </mat-label>
     </div>
     <button type="button" class="create-work-button" (click)="createNewElement()">Create New Work Item</button>
-    <a href="#">Record Activities</a>
-    <a href="#">Time Sheet</a>
+    <a href="javascript:void(0);" id="ngRecordActivity" (click)="openPopUp()">Record Activities</a>
+    <a href="/TimeSheet/TimeSheetUI.aspx">Time Sheet</a>
 </div>
 <div class="work-status-div mat-elevation-z8">
   <table class="table-bordered table" mat-table [dataSource]="data">
@@ -57,6 +57,9 @@
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr>
+      <td id="tdValMsg"></td>
+    </tr>
   </table>
 </div>
 

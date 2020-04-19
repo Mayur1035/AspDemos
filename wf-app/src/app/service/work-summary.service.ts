@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class WorkSummaryService {
-
+  
   private workItemUrl: string;
 
   constructor(private http: HttpClient) { 
@@ -51,6 +51,11 @@ export class WorkSummaryService {
     let content = {};
     return this.http.post<any>(`${this.workItemUrl}GetProcessList` , content, {
       headers: headers});
+  }
+
+  saveWorkItems(request: WorkItemRequest) {
+    return this.http.post(`${this.workItemUrl}SaveWorkItemDetails`, request );
+    //return this.http.get(`${this.workItemUrl}d`);
   }
 
 }
