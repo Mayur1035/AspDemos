@@ -1,6 +1,5 @@
 table {
     width: 100%;
-    justify-content: space-around;
   }
 
   .mat-header-cell{
@@ -16,6 +15,61 @@ table {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+  }
+
+  .work-summary-div{
+    padding-left: 3%;
+    padding-top: 1%;
+  }
+
+  .priority-control-div{
+    padding-top: 1.5%;
+  }
+
+  .work-status-div{
+    margin: 1%;
+  }
+
+  .create-work-button{
+    padding-top: 1.5%;
+  }
+
+  .record-activity-div{
+    padding-top: 1.5%;
+  }
+
+  .timesheet-div{
+    padding-top: 1.5%;
+  }
+
+  .table-header-div{
+    text-align: center;
+  }
+
+  mat-select[id=Status] {
+    text-align: center;
+  }
+
+  input{
+    text-align: center;
+  }
+
+  .label-header-div{
+    text-align: center;
+    padding-top: 3%;
+  }
+
+  .input-header-div{
+    text-align: center;
+    padding-top: 3%;
+  }
+
+  .select-header-div{
+    text-align: center;
+  }
+
+  .mat-option-text{
+    text-align: center;
   }
 
 

@@ -1,11 +1,13 @@
 <div class="work-summary-div">
-  <h3>Work Summary</h3>
+  <h4>Work Summary</h4>
 </div>
 <div class="super-work-div">
     <div class="process-control-div">
           <mat-form-field>
             <mat-label>Process </mat-label>
             <mat-select (selectionChange)="onProcessChange()" [(value)]="processIdVal">
+              <!--mat-option>None</mat-option>
+              <mat-option>Test</mat-option-->
               <mat-option *ngFor="let processObj of processList" [value]="processObj.Value">{{processObj.Text}}</mat-option>
             </mat-select>
           </mat-form-field>
@@ -24,35 +26,52 @@
       <mat-label>Priority : </mat-label>
       <mat-label>{{priorityVal}} </mat-label>
     </div>
-    <button type="button" class="create-work-button" (click)="createNewElement()">Create New Work Item</button>
-    <a href="javascript:void(0);" id="ngRecordActivity" (click)="openPopUp()">Record Activities</a>
-    <a href="/TimeSheet/TimeSheetUI.aspx">Time Sheet</a>
+    <div class="create-work-button">
+      <button type="button"  (click)="createNewElement()">Create New Work Item</button>
+    </div>
+    <div class="record-activity-div">
+      <a href="javascript:void(0);" id="ngRecordActivity" (click)="openPopUp()">Record Activities</a>
+    </div>
+    <div class="timesheet-div">
+      <a href="/TimeSheet/TimeSheetUI.aspx">Time Sheet</a>
+    </div>
 </div>
-<div class="work-status-div mat-elevation-z8">
+<div *ngIf="showGrid " class="work-status-div mat-elevation-z8">
   <table class="table-bordered table" mat-table [dataSource]="data">
 
     <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns">
 
       <th mat-header-cell *matHeaderCellDef>  
-        <mat-label *ngIf="column != 'Action' ">{{column}}  </mat-label>
+        <div class="table-header-div">
+          <mat-label id="{{column}}" *ngIf="column != 'Action' ">{{column}}  </mat-label>
+        </div>
       </th>
 
       <td mat-cell *matCellDef="let element"> 
 
-        <mat-label *ngIf="!element.canEdit">{{element[column]}}  </mat-label>
-
-         <mat-form-field *ngIf="element.canEdit && column!= 'Status' && column != 'Action'">
-          <input matInput [(ngModel)]="element[column]">
-        </mat-form-field>
-
-        <mat-form-field *ngIf="element.canEdit && column == 'Status' ">
-          <mat-select (selectionChange)="onStatusChange(element)" [(value)]="element[column]">
-            <mat-option *ngFor="let status of allStatus" [value]="status.StatusName">{{status.StatusName}}</mat-option>
-          </mat-select>
-      </mat-form-field>
-
-      <button class="start-button" *ngIf="column == 'Action' "
-       [disabled]="element.canEdit" mat-raised-button (click)="openDialog(element)">Start</button>
+        <div class="label-header-div">
+          <mat-label id="{{column}}" *ngIf="!element.canEdit">{{element[column]}}  </mat-label>
+        </div>
+        
+        <div class="input-header-div">
+          <mat-form-field *ngIf="element.canEdit && column!= 'Status' && column != 'Action'">
+            <input id="{{column}}" matInput [(ngModel)]="element[column]">
+          </mat-form-field>
+        </div>
+         
+        <div class="select-header-div">
+          <mat-form-field *ngIf="element.canEdit && column == 'Status' ">
+            <mat-select id="{{column}}" (selectionChange)="onStatusChange(element)" [(value)]="element[column]">
+              <mat-option *ngFor="let status of allStatus" [value]="status.StatusName">{{status.StatusName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        
+        <div class="label-header-div2">
+          <button class="start-button" *ngIf="column == 'Action' "
+            [disabled]="element.canEdit" mat-raised-button (click)="openDialog(element)">Start</button>
+        </div>
+      
       </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

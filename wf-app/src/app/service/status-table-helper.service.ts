@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { WorkSummaryService } from './work-summary.service';
+import { WorkItemRequest } from '../models/work-item-request';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -116,12 +118,63 @@ export class StatusTableHelperService {
   getValidationMsg(result: any, element: any, columnArray: any[]): string {
     let validationMsg : string = null;
     let validateAllData : boolean = this.getValidateAllDataVal(result);
-    if(validateAllData){
-      // element has all valid data with valid data types in all displayed columns
-    }else{
-      // element has all valid data with valid data types
+
+    for(let i =0 ; i < columnArray.length;i++){
+      let column = columnArray[i];
+      let columnName = column.name;
+      if( columnName != 'Action' && columnName != 'Status' && !column.hidden ){
+        let elementVal = element[columnName];
+        validationMsg = this.getValidated(elementVal , column.validationType , validateAllData, columnName);
+      }
     }
     return validationMsg;
+  }
+
+  getValidated(elementVal: any, validationType: any, allMandatory: boolean, columnName: string): string {
+    let validationMsg : string = null;
+    if(elementVal === '' && allMandatory){
+      validationMsg = 'Please provide value of '+columnName;
+    }
+    if(!validationMsg){
+      if(validationType === 'date' && this.validateDate(elementVal)){
+        validationMsg = 'Please enter valid date in mm/dd/yyyy format in '+columnName;
+      }else if(validationType === 'number' && this.validateNumber(elementVal)){
+        validationMsg = 'Please enter integer value '+columnName;
+      }else if(columnName == 'Comments' && elementVal.length > 200){
+        validationMsg = 'Comments should be less than 200 characters'
+      }
+    }
+    return validationMsg;
+  }
+
+  validateNumber(elementVal: any): boolean {
+    try{
+      let reg = new RegExp('^[0-9]+$');
+      return reg.test(elementVal);
+    }catch(e){
+      return false;
+    }
+  }
+
+  validateDate(elementVal: any): boolean {
+    if(!moment(elementVal, 'MM/DD/YYYY', true).isValid()){
+      return true;
+    }
+    return false;
+  }
+
+  generateXMLString(element: any, workItemRequest : WorkItemRequest, displayedColumns: string[] ): string {
+    let xmlString : string = null;
+    console.log("generateXMLString element", element);
+    xmlString = "<items><item WorkItemID= '"+workItemRequest.workitemId+"' StatusID= '"+workItemRequest.statusId+"' ";
+    for(let i =0 ; i < displayedColumns.length;i++){
+      let column = displayedColumns[i];
+      if(column != 'Action' && column != 'Status' ){
+        xmlString = xmlString + column +"= '"+element[column]+"' ";
+      }
+    }
+    xmlString = xmlString + " /></items>";
+    return xmlString;
   }
 
 }

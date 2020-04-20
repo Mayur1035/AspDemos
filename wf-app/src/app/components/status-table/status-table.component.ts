@@ -12,9 +12,8 @@ import * as $ from 'jquery'
 })
 export class StatusTableComponent implements OnInit {
 
- // $: any;
 
-  priorityVal:string="----";
+  priorityVal:string= '';
 
   /** Display Columns List */
   displayedColumns: string[] ;
@@ -23,18 +22,19 @@ export class StatusTableComponent implements OnInit {
   /** Grid Data */
   data: any[];
 
-  workItemRequest = new WorkItemRequest();
+  workItemRequest = null;
 
   /** ProcessControl Dropdown */
   processList : any[];
-  processIdVal : string="";
+  processIdVal : string= '';
 
   /** ActivityControl Dropdown */
   activityList : any[];
-  activityIdVal : string="";
+  activityIdVal : string= '';
 
   /** Status Dropdown */
   allStatus: any[];
+  showGrid: boolean = false;
 
   constructor(private workSummarySvc : WorkSummaryService, 
     private statusHelperSvc : StatusTableHelperService) {}
@@ -90,13 +90,17 @@ export class StatusTableComponent implements OnInit {
 
     this.workItemRequest = new WorkItemRequest();
     this.workItemRequest.statusId = statusId;
+
+    //let xmlString : string = this.statusHelperSvc.generateXMLString(element, this.workItemRequest, this.displayedColumns);
+    //console.log("xmlString ",xmlString);
+
     this.workSummarySvc.updateWorkItemStatus(this.workItemRequest).subscribe(
       (result: any) => {
         console.log("updateWorkItemStatus GetStatusDetails result ",result);
         let validationMsg = this.statusHelperSvc.getValidationMsg(result, element, this.columnArray);
         if(validationMsg){
-          let xmlString = '';
           this.workItemRequest.workitemId = element.WorkItemID;
+          let xmlString : string = this.statusHelperSvc.generateXMLString(element, this.workItemRequest, this.displayedColumns);
           this.workItemRequest.xmlString = xmlString;
           this.saveWorkItems(this.workItemRequest);
         }else{
@@ -141,7 +145,6 @@ export class StatusTableComponent implements OnInit {
         },
         err => {
           console.log("Issue Occurred while createBlankWorkItem ", err);
-          this.priorityVal="Issue Occurred in createBlankWorkItem!"
         }
       );
     }else{
@@ -151,6 +154,7 @@ export class StatusTableComponent implements OnInit {
 
   onProcessChange():void{
     console.log('onProcessChange... processIdVal', this.processIdVal);
+    this.resetAll();
     
     if( this.processIdVal){
       this.workSummarySvc.getActivityList(this.processIdVal).subscribe(
@@ -163,7 +167,41 @@ export class StatusTableComponent implements OnInit {
           console.log("Issue Occurred while populateActivityList ", err);
         }
       );
+
+      this.workSummarySvc.getPriorityVal(this.processIdVal).subscribe(
+        (result: any) => {
+          console.log("getPriorityVal result ",result);
+          this.priorityVal =  result;
+        },
+        err => {
+          console.log("Issue Occurred while getPriorityVal ", err);
+        }
+      );
+
     }
+  }
+  resetAll() {
+    console.log("RESET Values......")
+    this.priorityVal= '';
+
+    /** Display Columns List */
+    this.displayedColumns= [];
+    this.columnArray= [];
+
+    /** Grid Data */
+    this.data= [];
+
+    this.workItemRequest = null;
+    this.processIdVal = '';
+
+    /** ActivityControl Dropdown */
+    this.activityList= [];
+    this.activityIdVal= '';
+
+    /** Status Dropdown */
+    this.allStatus= [];
+
+    this.showGrid = false;
   }
 
   onActivityChange():void{
@@ -188,7 +226,6 @@ export class StatusTableComponent implements OnInit {
     this.workSummarySvc.getAssignedTimeTrackerWorkItems(request).subscribe(
       (result: any) => {
         console.log("generateGrid result ",result);
-        this.priorityVal="call successful !"
 
         this.columnArray = result.d[0];
         //this.columnArray = result[0][0];
@@ -204,10 +241,11 @@ export class StatusTableComponent implements OnInit {
         this.data = this.statusHelperSvc.populateData(result, this.allStatus);
         console.log("data : " ,this.data);
 
+        this.showGrid = true;
+
       },
       err => {
         console.log("Issue Occurred while getAssignedTimeTrackerWorkItems ", err);
-        this.priorityVal="Issue Occurred !"
       }
     );
   }

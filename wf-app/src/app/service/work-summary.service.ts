@@ -53,6 +53,15 @@ export class WorkSummaryService {
       headers: headers});
   }
 
+  getPriorityVal(processIdVal : string): Observable<any>{
+    let headers = new HttpHeaders();
+    headers.append('Content-Type', 'application/json');
+    let content = {ProcessID: processIdVal};
+    return this.http.post<any>(`${this.workItemUrl}GetPriorityForProcess`, content, {
+      headers: headers} );
+    //return this.http.get(`${this.workItemUrl}d`);
+  }
+
   saveWorkItems(request: WorkItemRequest) {
     return this.http.post(`${this.workItemUrl}SaveWorkItemDetails`, request );
     //return this.http.get(`${this.workItemUrl}d`);

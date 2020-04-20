@@ -28,13 +28,13 @@
         {
           "name": "AlphaNumeric10",
           "text": "Testing task",
-		  "hidden": true,
+		  "hidden": false,
           "id": 4
         },
 		{
           "name": "AlphaNumeric57",
           "text": "Testing task",
-		  "hidden": true,
+		  "hidden": false,
           "id": 5
 		  
         }
