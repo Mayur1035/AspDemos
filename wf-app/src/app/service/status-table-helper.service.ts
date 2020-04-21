@@ -11,11 +11,7 @@ export class StatusTableHelperService {
   constructor(private workSummarySvc : WorkSummaryService) { }
 
   populateDisplayedColumns(columnArray: any): string[] {
-
-    //let displayColumns: string[] = ['start-button'];
     let displayColumns = new Array<any>();
-   // let columnArray = result.d[0];
-    //let columnArray = result[0];
     if(columnArray){
       console.log("columnArray ",columnArray);
       for(let i =0 ; i < columnArray.length;i++){
@@ -107,27 +103,34 @@ export class StatusTableHelperService {
 
   getValidateAllDataVal(result: any): boolean {
     let validateAllData : boolean = false;
-    if(result.MoveToNextActorQueue ||
-      result.IsMoveToNextActorQueueNoSampleQC ||
-      result.IsFinalStatus){
+    let resultType = result.d;
+    if(resultType && 
+      (resultType.MoveToNextActorQueue || resultType.IsMoveToNextActorQueueNoSampleQC 
+        || resultType.IsFinalStatus)){
         validateAllData = true;
+        console.log("getValidateAllDataVal result", resultType);
       }
     return validateAllData;
   }
 
-  getValidationMsg(result: any, element: any, columnArray: any[]): string {
-    let validationMsg : string = null;
+  getValidationMsg(result: any, element: any, columnArray: any[]): string[] {
     let validateAllData : boolean = this.getValidateAllDataVal(result);
-
+    let allValidationsMsgs = new Array<string>();
+    console.log("getValidationMsg validateAllData", validateAllData);
     for(let i =0 ; i < columnArray.length;i++){
+      let validationMsg : string = null;
       let column = columnArray[i];
       let columnName = column.name;
       if( columnName != 'Action' && columnName != 'Status' && !column.hidden ){
         let elementVal = element[columnName];
         validationMsg = this.getValidated(elementVal , column.validationType , validateAllData, columnName);
+        if(validationMsg){
+          console.log("getValidationMsg validationMsg ",validationMsg);
+          allValidationsMsgs.push(validationMsg);
+        }
       }
     }
-    return validationMsg;
+    return allValidationsMsgs;
   }
 
   getValidated(elementVal: any, validationType: any, allMandatory: boolean, columnName: string): string {
@@ -135,10 +138,10 @@ export class StatusTableHelperService {
     if(elementVal === '' && allMandatory){
       validationMsg = 'Please provide value of '+columnName;
     }
-    if(!validationMsg){
+    if(!validationMsg && elementVal !== ''){
       if(validationType === 'date' && this.validateDate(elementVal)){
         validationMsg = 'Please enter valid date in mm/dd/yyyy format in '+columnName;
-      }else if(validationType === 'number' && this.validateNumber(elementVal)){
+      }else if(validationType === 'number' && !this.validateNumber(elementVal)){
         validationMsg = 'Please enter integer value '+columnName;
       }else if(columnName == 'Comments' && elementVal.length > 200){
         validationMsg = 'Comments should be less than 200 characters'

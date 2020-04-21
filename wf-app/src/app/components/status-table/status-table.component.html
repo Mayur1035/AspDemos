@@ -30,11 +30,16 @@
       <button type="button"  (click)="createNewElement()">Create New Work Item</button>
     </div>
     <div class="record-activity-div">
-      <a href="javascript:void(0);" id="ngRecordActivity" (click)="openPopUp()">Record Activities</a>
+      <a href="javascript:void(0);" id="lnkAngularRecordActivity" (click)="openPopUp()">Record Activities</a>
     </div>
     <div class="timesheet-div">
       <a href="/TimeSheet/TimeSheetUI.aspx">Time Sheet</a>
     </div>
+</div>
+<div *ngIf="showErrList" class="error-div">
+  <mat-list  *ngFor="let msg of validationMsgs">
+    <mat-list-item id="errorMsgList"> {{msg}} </mat-list-item>
+   </mat-list>
 </div>
 <div *ngIf="showGrid " class="work-status-div mat-elevation-z8">
   <table class="table-bordered table" mat-table [dataSource]="data">

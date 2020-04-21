@@ -10,6 +10,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatInputModule} from '@angular/material/input';
 import {MatDividerModule} from '@angular/material/divider';
+import {MatListModule} from '@angular/material/list';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -37,7 +38,8 @@ import { StatusTableHelperService } from './service/status-table-helper.service'
     MatSelectModule,
     MatDialogModule,
     MatInputModule,
-    MatDividerModule
+    MatDividerModule,
+    MatListModule
   ],
   providers: [WorkSummaryService, StatusTableHelperService],
   bootstrap: [AppComponent]

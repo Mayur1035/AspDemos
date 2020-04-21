@@ -18,8 +18,13 @@ table {
   }
 
   .work-summary-div{
-    padding-left: 3%;
+    padding-left: 2%;
     padding-top: 1%;
+  }
+
+  mat-list-item[id=errorMsgList]{
+    color: red;
+    font-size: small;
   }
 
   .priority-control-div{

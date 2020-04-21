@@ -35,6 +35,8 @@ export class StatusTableComponent implements OnInit {
   /** Status Dropdown */
   allStatus: any[];
   showGrid: boolean = false;
+  showErrList: boolean = false;
+  validationMsgs: string[] = null;
 
   constructor(private workSummarySvc : WorkSummaryService, 
     private statusHelperSvc : StatusTableHelperService) {}
@@ -60,6 +62,7 @@ export class StatusTableComponent implements OnInit {
   openDialog(element : any): void {
     console.log("openDialog for Editing ",element);
     element.canEdit= true;
+    this.showErrList = false;
     
     if(element.Status == "Select"  || element.Status != ""){
     this.workItemRequest = new WorkItemRequest();
@@ -84,27 +87,27 @@ export class StatusTableComponent implements OnInit {
 
   onStatusChange(element : any): void {
     console.log('Status changed...', element.Status);
-    element.canEdit= false;
+    this.showErrList = false;
+    
     let statusId = this.statusHelperSvc.getStatusId(element.Status , this.allStatus);
     console.log('onStatusChange statusId ',statusId);
 
     this.workItemRequest = new WorkItemRequest();
     this.workItemRequest.statusId = statusId;
 
-    //let xmlString : string = this.statusHelperSvc.generateXMLString(element, this.workItemRequest, this.displayedColumns);
-    //console.log("xmlString ",xmlString);
-
     this.workSummarySvc.updateWorkItemStatus(this.workItemRequest).subscribe(
       (result: any) => {
         console.log("updateWorkItemStatus GetStatusDetails result ",result);
-        let validationMsg = this.statusHelperSvc.getValidationMsg(result, element, this.columnArray);
-        if(validationMsg){
+        this.validationMsgs = this.statusHelperSvc.getValidationMsg(result, element, this.columnArray);
+        if(!(this.validationMsgs.length > 0)){
           this.workItemRequest.workitemId = element.WorkItemID;
           let xmlString : string = this.statusHelperSvc.generateXMLString(element, this.workItemRequest, this.displayedColumns);
           this.workItemRequest.xmlString = xmlString;
           this.saveWorkItems(this.workItemRequest);
+          //element.canEdit= this.saveWorkItems(this.workItemRequest);
         }else{
-          console.log("validation failed for validationMsg ", validationMsg);
+          console.log("validation failed for validationMsg ", this.validationMsgs);
+          this.showErrList = true;
         }
       },
       err => {
@@ -114,21 +117,25 @@ export class StatusTableComponent implements OnInit {
   }
 
 
-  saveWorkItems(workItemRequest: WorkItemRequest): void {
+  saveWorkItems(workItemRequest: WorkItemRequest): boolean {
+    let val : boolean = true;
     console.log("saveWorkItems workItemRequest ", workItemRequest);
     this.workSummarySvc.saveWorkItems(this.workItemRequest).subscribe(
       (result: any) =>{
         console.log("saveWorkItems result ", result);
-        this.generateGrid(this.workItemRequest);
+        this.generateGrid();
+        val = false;
       },
       err => {
         console.log("Issue Occurred while saveWorkItems ", err);
       }
     );
+    return val;
   }
 
   createNewElement(): void{
-    console.log('Creating new work item...')
+    console.log('Creating new work item... activityIdVal', this.activityIdVal);
+    console.log('Creating new work item... processIdVal', this.processIdVal);
 
     //this.processIdVal = "test";
     //this.activityIdVal= "test";
@@ -137,19 +144,15 @@ export class StatusTableComponent implements OnInit {
     this.workItemRequest.processid= this.processIdVal;
     this.workItemRequest.activityId= this.activityIdVal;
 
-    if( this.workItemRequest.processid && this.workItemRequest.activityId){
-      this.workSummarySvc.createBlankWorkItem(this.workItemRequest).subscribe(
+    this.workSummarySvc.createBlankWorkItem(this.workItemRequest).subscribe(
         (blankResult: any) =>{
           console.log("createBlankWorkItem result ", blankResult);
-          this.generateGrid(this.workItemRequest);
+          this.generateGrid();
         },
         err => {
           console.log("Issue Occurred while createBlankWorkItem ", err);
         }
       );
-    }else{
-      console.log("processid  OR  activityId value is not present !");
-    }
   }
 
   onProcessChange():void{
@@ -171,7 +174,8 @@ export class StatusTableComponent implements OnInit {
       this.workSummarySvc.getPriorityVal(this.processIdVal).subscribe(
         (result: any) => {
           console.log("getPriorityVal result ",result);
-          this.priorityVal =  result;
+          console.log("getPriorityVal priorityVal ",result.d[0]);
+          this.priorityVal =  result.d[0];
         },
         err => {
           console.log("Issue Occurred while getPriorityVal ", err);
@@ -192,7 +196,6 @@ export class StatusTableComponent implements OnInit {
     this.data= [];
 
     this.workItemRequest = null;
-    this.processIdVal = '';
 
     /** ActivityControl Dropdown */
     this.activityList= [];
@@ -202,11 +205,20 @@ export class StatusTableComponent implements OnInit {
     this.allStatus= [];
 
     this.showGrid = false;
+    this.showErrList = false;
   }
 
   onActivityChange():void{
     console.log('onActivityChange... activityIdVal', this.activityIdVal);
     console.log('onActivityChange... processIdVal', this.processIdVal);
+    this.generateGrid();
+  }
+
+  generateGrid() {
+    console.log('generateGrid... activityIdVal', this.activityIdVal);
+    console.log('generateGrid... processIdVal', this.processIdVal);
+
+    this.showErrList = false;
 
     //this.processIdVal = "test";
     //this.activityIdVal= "test";
@@ -216,14 +228,7 @@ export class StatusTableComponent implements OnInit {
     this.workItemRequest.activityId= this.activityIdVal;
 
     if( this.workItemRequest.processid && this.workItemRequest.activityId){
-      this.generateGrid(this.workItemRequest);
-    }else{
-      console.log("processid  OR  activityId value is not present !");
-    }
-  }
-
-  generateGrid(request: WorkItemRequest) {
-    this.workSummarySvc.getAssignedTimeTrackerWorkItems(request).subscribe(
+    this.workSummarySvc.getAssignedTimeTrackerWorkItems(this.workItemRequest).subscribe(
       (result: any) => {
         console.log("generateGrid result ",result);
 
@@ -243,11 +248,14 @@ export class StatusTableComponent implements OnInit {
 
         this.showGrid = true;
 
-      },
-      err => {
-        console.log("Issue Occurred while getAssignedTimeTrackerWorkItems ", err);
-      }
-    );
+        }, err => {
+         console.log("Issue Occurred while getAssignedTimeTrackerWorkItems ", err);
+        }
+      );
+    }else{
+      console.log("processid  OR  activityId value is not present !");
+    }
+
   }
 
 
@@ -255,8 +263,6 @@ export class StatusTableComponent implements OnInit {
   /** Placeholder to add Record Activities Related scripts */
   openPopUp(): void {
     console.log("Control inside Record Activities OpenPopUp.....");
-    
-   $('#ngRecordActivity').click(function(){ alert('Wass up!'); });
 
   }
 

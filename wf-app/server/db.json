@@ -17,6 +17,7 @@
           "id": 2,
           "name": "ProcessKeyNumber",
 		   "hidden": false,
+		    "validationType":"number",
           "text": "Http Client"
         },
         {
@@ -28,6 +29,7 @@
         {
           "name": "AlphaNumeric10",
           "text": "Testing task",
+		   "validationType":"date",
 		  "hidden": false,
           "id": 4
         },
