@@ -87,6 +87,7 @@ export class StatusTableComponent implements OnInit {
 
   onStatusChange(element : any): void {
     console.log('Status changed...', element.Status);
+    console.log('Status changed...from ', element.tempStatus);
     this.showErrList = false;
     
     let statusId = this.statusHelperSvc.getStatusId(element.Status , this.allStatus);
@@ -101,13 +102,14 @@ export class StatusTableComponent implements OnInit {
         this.validationMsgs = this.statusHelperSvc.getValidationMsg(result, element, this.columnArray);
         if(!(this.validationMsgs.length > 0)){
           this.workItemRequest.workitemId = element.WorkItemID;
-          let xmlString : string = this.statusHelperSvc.generateXMLString(element, this.workItemRequest, this.displayedColumns);
+          let xmlString : string = this.statusHelperSvc.generateXMLString(element, this.workItemRequest, this.columnArray);
           this.workItemRequest.xmlString = xmlString;
           this.saveWorkItems(this.workItemRequest);
           //element.canEdit= this.saveWorkItems(this.workItemRequest);
         }else{
           console.log("validation failed for validationMsg ", this.validationMsgs);
           this.showErrList = true;
+          element.Status = element.tempStatus;
         }
       },
       err => {

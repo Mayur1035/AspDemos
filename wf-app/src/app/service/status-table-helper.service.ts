@@ -39,6 +39,7 @@ export class StatusTableHelperService {
         dataArray[i].canEdit= tempVal;
         let statusId = dataArray[i].Status;
         dataArray[i].Status = this.getStatusName(allStatus, statusId);
+        dataArray[i].tempStatus = dataArray[i].Status;
         data.push(dataArray[i]);
       }
     }
@@ -135,15 +136,21 @@ export class StatusTableHelperService {
 
   getValidated(elementVal: any, validationType: any, allMandatory: boolean, columnName: string): string {
     let validationMsg : string = null;
-    if(elementVal === '' && allMandatory){
+    console.log("getValidated elementVal", elementVal);
+    console.log("getValidated validationType", validationType);
+    console.log("getValidated allMandatory", allMandatory);
+    console.log("getValidated columnName", columnName);
+    if(!elementVal && allMandatory){
+      console.log("getValidated Mandatory checking.....");
       validationMsg = 'Please provide value of '+columnName;
     }
-    if(!validationMsg && elementVal !== ''){
+    if(!validationMsg && elementVal){
+      console.log("getValidated Optional checking..... for ", elementVal);
       if(validationType === 'date' && this.validateDate(elementVal)){
         validationMsg = 'Please enter valid date in mm/dd/yyyy format in '+columnName;
       }else if(validationType === 'number' && !this.validateNumber(elementVal)){
         validationMsg = 'Please enter integer value '+columnName;
-      }else if(columnName == 'Comments' && elementVal.length > 200){
+      }else if(columnName === 'Comments' && elementVal.length > 200){
         validationMsg = 'Comments should be less than 200 characters'
       }
     }
@@ -153,7 +160,10 @@ export class StatusTableHelperService {
   validateNumber(elementVal: any): boolean {
     try{
       let reg = new RegExp('^[0-9]+$');
-      return reg.test(elementVal);
+      let val : boolean = reg.test(elementVal);
+      console.log("validateNumber val",val);
+      console.log("validateNumber elementVal",elementVal);
+      return val;
     }catch(e){
       return false;
     }
@@ -166,14 +176,16 @@ export class StatusTableHelperService {
     return false;
   }
 
-  generateXMLString(element: any, workItemRequest : WorkItemRequest, displayedColumns: string[] ): string {
+  generateXMLString(element: any, workItemRequest : WorkItemRequest, columnArray: any[] ): string {
     let xmlString : string = null;
     console.log("generateXMLString element", element);
-    xmlString = "<items><item WorkItemID= '"+workItemRequest.workitemId+"' StatusID= '"+workItemRequest.statusId+"' ";
-    for(let i =0 ; i < displayedColumns.length;i++){
-      let column = displayedColumns[i];
-      if(column != 'Action' && column != 'Status' ){
-        xmlString = xmlString + column +"= '"+element[column]+"' ";
+    xmlString = "<items><item StatusID= '"+workItemRequest.statusId+"' ";
+    for(let i =0 ; i < columnArray.length;i++){
+      let column = columnArray[i];
+      let columnName = column.name;
+      let columnOriginalName = column.originalColumnName;
+      if(columnName != 'Action' && columnName != 'Status' && columnOriginalName){
+        xmlString = xmlString + columnOriginalName +"='"+element[columnName]+"' ";
       }
     }
     xmlString = xmlString + " /></items>";
