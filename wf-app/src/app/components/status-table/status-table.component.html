@@ -1,3 +1,11 @@
+<div class="external-links-div">
+  <div class="record-activity-div">
+    <a href="javascript:void(0);" id="lnkAngularRecordActivity" (click)="openPopUp()">Record Activities</a>
+  </div>
+  <div class="timesheet-div">
+    <a href="/TimeSheet/TimeSheetUI.aspx">Time Sheet</a>
+  </div>
+</div>
 <div class="work-summary-div">
   <h4>Work Summary</h4>
 </div>
@@ -28,12 +36,6 @@
     </div>
     <div class="create-work-button">
       <button type="button"  (click)="createNewElement()">Create New Work Item</button>
-    </div>
-    <div class="record-activity-div">
-      <a href="javascript:void(0);" id="lnkAngularRecordActivity" (click)="openPopUp()">Record Activities</a>
-    </div>
-    <div class="timesheet-div">
-      <a href="/TimeSheet/TimeSheetUI.aspx">Time Sheet</a>
     </div>
 </div>
 <div *ngIf="showErrList" class="error-div">

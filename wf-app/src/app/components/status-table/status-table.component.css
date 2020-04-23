@@ -11,6 +11,20 @@ table {
     margin-right: 5%;
   }
 
+  .external-links-div{
+    display: flex;
+    flex-direction:row;
+    justify-content:flex-end;
+  }
+
+  .record-activity-div{
+    margin-right: 2.5%;
+  }
+
+  .timesheet-div{
+    margin-right: 1%;
+  }
+  
   .super-work-div{
     display: flex;
     flex-direction: row;
