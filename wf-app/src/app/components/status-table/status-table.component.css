@@ -27,6 +27,16 @@ table {
     font-size: small;
   }
 
+  mat-label[id=successMsg]{
+    color: green;
+    font-size: small;
+    font-weight: bold;
+  }
+
+  .success-div{
+    margin-left: 35%;
+  }
+
   .priority-control-div{
     padding-top: 1.5%;
   }

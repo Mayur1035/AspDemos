@@ -36,6 +36,7 @@ export class StatusTableComponent implements OnInit {
   allStatus: any[];
   showGrid: boolean = false;
   showErrList: boolean = false;
+  showSuccessMsg: boolean = false;
   validationMsgs: string[] = null;
 
   constructor(private workSummarySvc : WorkSummaryService, 
@@ -63,8 +64,9 @@ export class StatusTableComponent implements OnInit {
     console.log("openDialog for Editing ",element);
     element.canEdit= true;
     this.showErrList = false;
+    this.showSuccessMsg = false;
     
-    if(element.Status == "Select"  || element.Status != ""){
+    //if(element.Status == "Select"  || element.Status != ""){
     this.workItemRequest = new WorkItemRequest();
     this.workItemRequest.processid= this.processIdVal;
     this.workItemRequest.workitemId=element.WorkItemID;
@@ -76,12 +78,13 @@ export class StatusTableComponent implements OnInit {
       this.workSummarySvc.startWorkItem(this.workItemRequest).subscribe(
         (result: any) => {
           console.log("startWorkItem result ",result);
+          this.generateGrid();
         },
         err => {
           console.log("Issue Occurred while startWorkItem ", err);
         }
       );
-    }
+    //}
 
   }
 
@@ -99,12 +102,13 @@ export class StatusTableComponent implements OnInit {
     this.workSummarySvc.updateWorkItemStatus(this.workItemRequest).subscribe(
       (result: any) => {
         console.log("updateWorkItemStatus GetStatusDetails result ",result);
+        let resultType = result.d;
         this.validationMsgs = this.statusHelperSvc.getValidationMsg(result, element, this.columnArray);
         if(!(this.validationMsgs.length > 0)){
           this.workItemRequest.workitemId = element.WorkItemID;
           let xmlString : string = this.statusHelperSvc.generateXMLString(element, this.workItemRequest, this.columnArray);
           this.workItemRequest.xmlString = xmlString;
-          this.saveWorkItems(this.workItemRequest);
+          this.saveWorkItems(this.workItemRequest, resultType);
           //element.canEdit= this.saveWorkItems(this.workItemRequest);
         }else{
           console.log("validation failed for validationMsg ", this.validationMsgs);
@@ -119,7 +123,7 @@ export class StatusTableComponent implements OnInit {
   }
 
 
-  saveWorkItems(workItemRequest: WorkItemRequest): boolean {
+  saveWorkItems(workItemRequest: WorkItemRequest, resultType: any): boolean {
     let val : boolean = true;
     console.log("saveWorkItems workItemRequest ", workItemRequest);
     this.workSummarySvc.saveWorkItems(this.workItemRequest).subscribe(
@@ -127,6 +131,10 @@ export class StatusTableComponent implements OnInit {
         console.log("saveWorkItems result ", result);
         this.generateGrid();
         val = false;
+        if(resultType && resultType.IsFinalStatus){
+            console.log("saveWorkItems resultType", resultType);
+            this.showSuccessMsg = true;
+          }
       },
       err => {
         console.log("Issue Occurred while saveWorkItems ", err);
@@ -208,6 +216,7 @@ export class StatusTableComponent implements OnInit {
 
     this.showGrid = false;
     this.showErrList = false;
+    this.showSuccessMsg = false;
   }
 
   onActivityChange():void{

@@ -109,7 +109,7 @@ export class StatusTableHelperService {
       (resultType.MoveToNextActorQueue || resultType.IsMoveToNextActorQueueNoSampleQC 
         || resultType.IsFinalStatus)){
         validateAllData = true;
-        console.log("getValidateAllDataVal result", resultType);
+        console.log("getValidateAllDataVal resultType", resultType);
       }
     return validateAllData;
   }
