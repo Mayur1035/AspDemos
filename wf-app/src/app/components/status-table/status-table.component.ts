@@ -92,6 +92,7 @@ export class StatusTableComponent implements OnInit {
     console.log('Status changed...', element.Status);
     console.log('Status changed...from ', element.tempStatus);
     this.showErrList = false;
+    this.showSuccessMsg = false;
     
     let statusId = this.statusHelperSvc.getStatusId(element.Status , this.allStatus);
     console.log('onStatusChange statusId ',statusId);
@@ -146,15 +147,27 @@ export class StatusTableComponent implements OnInit {
   createNewElement(): void{
     console.log('Creating new work item... activityIdVal', this.activityIdVal);
     console.log('Creating new work item... processIdVal', this.processIdVal);
+    this.showErrList = false;
+    this.showSuccessMsg= false;
 
     //this.processIdVal = "test";
     //this.activityIdVal= "test";
 
-    this.workItemRequest = new WorkItemRequest();
-    this.workItemRequest.processid= this.processIdVal;
-    this.workItemRequest.activityId= this.activityIdVal;
+    if(!this.processIdVal){
+      this.validationMsgs = new Array<string>();
+      this.validationMsgs.push("Please select process id");
+      this.showErrList = true;
+    }else if(!this.activityIdVal){
+      this.validationMsgs = new Array<string>();
+      this.validationMsgs.push("Please select activity id");
+      this.showErrList = true;
+    }else{
+      this.showErrList = false;
+      this.workItemRequest = new WorkItemRequest();
+      this.workItemRequest.processid= this.processIdVal;
+      this.workItemRequest.activityId= this.activityIdVal;
 
-    this.workSummarySvc.createBlankWorkItem(this.workItemRequest).subscribe(
+      this.workSummarySvc.createBlankWorkItem(this.workItemRequest).subscribe(
         (blankResult: any) =>{
           console.log("createBlankWorkItem result ", blankResult);
           this.generateGrid();
@@ -163,6 +176,8 @@ export class StatusTableComponent implements OnInit {
           console.log("Issue Occurred while createBlankWorkItem ", err);
         }
       );
+    }
+    
   }
 
   onProcessChange():void{
